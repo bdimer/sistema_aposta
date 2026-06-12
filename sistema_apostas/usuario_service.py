@@ -1,12 +1,38 @@
 #validar_idade()
 #validar_senha()
+#verificar_cpf()
+#verificar_email()
+#verificar_login()
 #cadastrar_usuario()
+
 from usuario import Usuario
+from datetime import datetime
 
-def validar_idade(data_nascimento):
-    pass
+def validar_idade(data_nascimento): #Precisa ser maior de 18 anos
 
-def validar_senha(senha):
+    try:
+        nascimento = datetime.strptime(
+            data_nascimento,
+            "%d/%m/%Y"
+        )
+
+    except ValueError:
+        return False
+
+    hoje = datetime.today()
+
+    idade = hoje.year - nascimento.year
+
+    if (
+        (hoje.month, hoje.day)
+        <
+        (nascimento.month, nascimento.day)
+    ):
+        idade -= 1
+
+    return idade >= 18
+
+def validar_senha(senha): #8 caracteres, maiuscula, minuscula, numero e especial
 
     if len(senha) < 8:
         return False
@@ -47,6 +73,3 @@ def verificar_cpf(cpf, usuarios):
 
     return False
 
-
-def cadastrar_usuario():
-    pass
