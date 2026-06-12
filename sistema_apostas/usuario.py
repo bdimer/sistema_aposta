@@ -9,7 +9,6 @@ class Usuario:
         login,
         senha
     ):
-
         self.nome = nome
         self.email = email
         self.cpf = cpf
@@ -17,5 +16,6 @@ class Usuario:
         self.login = login
         self.senha = senha
 
+        # Valores definidos pelo sistema
         self.pontos = 100
         self.status = "ativo"
