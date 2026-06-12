@@ -1,6 +1,4 @@
 from usuario import Usuario
-from usuario_service import verificar_cpf
-from usuario_service import validar_senha
 
 usuario = Usuario(
     nome="João",
