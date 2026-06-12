@@ -10,13 +10,13 @@ from datetime import datetime
 
 def validar_idade(data_nascimento): #Precisa ser maior de 18 anos
 
-    try:
+    try:  #vai executar o código sem 'quebrar' em caso de valor invalido
         nascimento = datetime.strptime(
             data_nascimento,
             "%d/%m/%Y"
         )
-
-    except ValueError:
+    # usando o try antes, caso seja inserido um valor invalido, ele segue para o except sem quebrar o programa
+    except ValueError: #dessa forma o 'except' espera especificamente um erro de valor inválido (Value Error)
         return False
 
     hoje = datetime.today()
