@@ -10,7 +10,7 @@ from datetime import datetime
 
 def validar_idade(data_nascimento): #Precisa ser maior de 18 anos
 
-    try:  #vai executar o código sem 'quebrar' em caso de valor invalido
+    try:  #Tenta executar um código que pode gerar erro
         # datetime.strptime transforma a data informada em um formato de data que o python entenda
         nascimento = datetime.strptime(
             data_nascimento,
