@@ -1,5 +1,5 @@
-#validar_idade()
-#validar_senha()
+#validar_idade() - funcionou 
+#validar_senha() - a principio ta funcionando tbm
 #verificar_cpf()
 #verificar_email()
 #verificar_login()
