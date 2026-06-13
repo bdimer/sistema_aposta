@@ -2,9 +2,9 @@
 
 #validar_idade() - funcionou 
 #validar_senha() - a principio ta funcionando tbm
-#verificar_cpf()
-#verificar_email()
-#verificar_login()
+#verificar_cpf() - OK
+#verificar_email() - OK
+#verificar_login() - OK
 #cadastrar_usuario()
 
 from usuario import Usuario
@@ -67,7 +67,7 @@ def validar_senha(senha): #8 caracteres, maiuscula, minuscula, numero e especial
     )
 
 
-def verificar_cpf(cpf, usuarios):
+def verificar_cpf(cpf, usuarios): #VALIDAR CPF
 
     for usuario in usuarios:
 
@@ -76,3 +76,60 @@ def verificar_cpf(cpf, usuarios):
 
     return False
 
+def verificar_email(email, usuarios):  #VALIDAR EMAIL
+
+    for usuario in usuarios:
+
+        if usuario.email == email:
+            return True
+
+    return False
+
+
+def verificar_login(login, usuarios):  #VALIDAR LOGIN
+
+    for usuario in usuarios:
+
+        if usuario.login == login:
+            return True
+
+    return False
+
+
+def cadastrar_usuario(    #CADASTRAR USUÁRIO
+    nome,
+    email,
+    cpf,
+    data_nascimento,
+    login,
+    senha,
+    usuarios
+):
+
+    if not validar_idade(data_nascimento): # not inverte o resultado
+        return False, "Usuário deve ter 18 anos ou mais."  # no caso se for false, not false retorna True, e entra no bloco
+
+    if not validar_senha(senha):
+        return False, "Senha inválida."
+
+    if verificar_cpf(cpf, usuarios):
+        return False, "CPF já cadastrado."
+
+    if verificar_email(email, usuarios):
+        return False, "E-mail já cadastrado."
+
+    if verificar_login(login, usuarios):
+        return False, "Login já cadastrado."
+
+    novo_usuario = Usuario(
+        nome,
+        email,
+        cpf,
+        data_nascimento,
+        login,
+        senha
+    )
+
+    usuarios.append(novo_usuario) # .append coloca usuario dentro da lista
+
+    return True, novo_usuario
