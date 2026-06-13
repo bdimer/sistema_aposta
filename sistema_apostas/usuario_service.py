@@ -1,3 +1,5 @@
+#REGRAS DO NEGÓCIO
+
 #validar_idade() - funcionou 
 #validar_senha() - a principio ta funcionando tbm
 #verificar_cpf()
