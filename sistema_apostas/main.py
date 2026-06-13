@@ -32,7 +32,7 @@ while True:
             usuarios
         )
         if sucesso:
-            print("Cadastro realizado com sucesso!")
+            print("\n- Cadastro realizado com sucesso! -")
             print(resultado)
         else:
             print(resultado)
