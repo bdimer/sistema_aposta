@@ -1,17 +1,22 @@
 #CAMADA DE APRESENTAÇÃO
 
 from usuario import Usuario
-from usuario_service import cadastrar_usuario
+from usuario_service import (
+    cadastrar_usuario,
+    autenticar_usuario
+)
 
 usuarios = []
+usuario_logado = None
 
 while True:
     print("\n===== SISTEMA DE APOSTAS =====")
     print("1 - Cadastrar usuário")
-    print("2 - Sair")
+    print("2 - Login")
+    print("3 - Sair")
 
     opcao = input("Escolha uma opção: ")
-
+#--------------------------------
     if opcao == "1":
         nome = input("Nome: ")
         email = input("Email: ")
@@ -37,8 +42,28 @@ while True:
         else:
             print(resultado)
 
-
+#-----------------------------------
     elif opcao == "2":
+        login = input("Login: ")
+        senha = input("Senha: ")
+
+        sucesso, resultado = autenticar_usuario(
+            login,
+            senha,
+            usuarios
+        )
+
+        if sucesso:
+            usuario_logado = resultado
+            print(
+                f"Bem vindo, "
+                f"{usuario_logado.nome}!"
+            )
+        else:
+            print(resultado)
+
+#-----------------------------------
+    elif opcao == "3":
         print("Encerrando sistema.")
         break
 
