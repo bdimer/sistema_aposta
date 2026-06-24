@@ -10,6 +10,8 @@
 from usuario import Usuario
 from datetime import datetime
 
+
+#VALIDAR IDADE
 def validar_idade(data_nascimento): #Precisa ser maior de 18 anos
 
     try:  #Tenta executar um código que pode gerar erro
@@ -35,6 +37,8 @@ def validar_idade(data_nascimento): #Precisa ser maior de 18 anos
 
     return idade >= 18
 
+
+#VALIDAR SENHA
 def validar_senha(senha): #8 caracteres, maiuscula, minuscula, numero e especial
 
     if len(senha) < 8:
@@ -66,7 +70,7 @@ def validar_senha(senha): #8 caracteres, maiuscula, minuscula, numero e especial
         tem_especial
     )
 
-
+#VERIFICAR CPF
 def verificar_cpf(cpf, usuarios): #VALIDAR CPF
 
     for usuario in usuarios:
@@ -76,6 +80,8 @@ def verificar_cpf(cpf, usuarios): #VALIDAR CPF
 
     return False
 
+
+#VERIFICAR E-MAIL
 def verificar_email(email, usuarios):  #VALIDAR EMAIL
 
     for usuario in usuarios:
@@ -85,7 +91,7 @@ def verificar_email(email, usuarios):  #VALIDAR EMAIL
 
     return False
 
-
+#VERIFICAR LOGIN
 def verificar_login(login, usuarios):  #VALIDAR LOGIN
 
     for usuario in usuarios:
@@ -95,7 +101,7 @@ def verificar_login(login, usuarios):  #VALIDAR LOGIN
 
     return False
 
-
+#CADASTRAR USUÁRIO
 def cadastrar_usuario(    #CADASTRAR USUÁRIO
     nome,
     email,
@@ -110,7 +116,11 @@ def cadastrar_usuario(    #CADASTRAR USUÁRIO
         return False, "Usuário deve ter 18 anos ou mais."  # no caso se for false, not false retorna True, e entra no bloco
 
     if not validar_senha(senha):
-        return False, "Senha inválida."
+        return False, (
+            "A senha deve possuir "
+            "8 caracteres, letra maiúscula, "
+            "minúscula, número e caractere especial."
+        )
 
     if verificar_cpf(cpf, usuarios):
         return False, "CPF já cadastrado."
@@ -133,3 +143,18 @@ def cadastrar_usuario(    #CADASTRAR USUÁRIO
     usuarios.append(novo_usuario) # .append coloca usuario dentro da lista
 
     return True, novo_usuario
+
+#AUTENTICAR USUÁRIO
+def autenticar_usuario(
+        login,
+        senha,
+        usuarios
+):
+    for usuario in usuarios:
+        if usuario.login == login:
+            if usuario.senha == senha:
+                return True, usuario
+            
+            return False, "Senha incorreta."
+        
+    return False, "Usuário não encontrado."
