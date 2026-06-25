@@ -158,3 +158,9 @@ def autenticar_usuario(
             return False, "Senha incorreta."
         
     return False, "Usuário não encontrado."
+
+
+#CONSULTAR SALDO USUARIO
+def consultar_saldo(usuario):
+    return usuario.pontos
+
