@@ -144,17 +144,4 @@ def cadastrar_usuario(    #CADASTRAR USUÁRIO
 
     return True, novo_usuario
 
-#AUTENTICAR USUÁRIO
-def autenticar_usuario(
-        login,
-        senha,
-        usuarios
-):
-    for usuario in usuarios:
-        if usuario.login == login:
-            if usuario.senha == senha:
-                return True, usuario
-            
-            return False, "Senha incorreta."
-        
-    return False, "Usuário não encontrado."
+
