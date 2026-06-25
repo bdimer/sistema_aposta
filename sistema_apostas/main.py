@@ -3,7 +3,8 @@
 from usuario import Usuario
 from usuario_service import (
     cadastrar_usuario,
-    autenticar_usuario
+    autenticar_usuario,
+    consultar_saldo
 )
 
 usuarios = []
@@ -55,12 +56,29 @@ while True:
 
         if sucesso:
             usuario_logado = resultado
-            print(
-                f"Bem vindo, "
-                f"{usuario_logado.nome}!"
-            )
-        else:
-            print(resultado)
+            print(f"Bem vindo, {usuario_logado.nome}!")
+
+            while usuario_logado is not None:
+                print("\n===== ÁREA DO USUÁRIO =====")
+                print("1 - Consultar saldo")
+                print("2 - Logout")
+            
+                opcao_usuario = input(
+                    "Escolha uma opção: "
+                )
+                if opcao_usuario == "1":
+                    saldo = consultar_saldo(usuario_logado)
+                    print(
+                        f"Saldo atual: "
+                        f"{saldo} pontos"
+                    )
+                elif opcao_usuario == "2":
+                    usuario_logado = None
+                    print("Logout realizado.")
+
+                else:
+                    print("Opção inválida.")
+
 
 #-----------------------------------
     elif opcao == "3":
