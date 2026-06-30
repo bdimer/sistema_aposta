@@ -156,7 +156,9 @@ def autenticar_usuario(
                 return True, usuario
             
             return False, "Senha incorreta."
-        
+        if not usuario.status:
+            return False, "Usuário inativo."
+
     return False, "Usuário não encontrado."
 
 
@@ -164,3 +166,23 @@ def autenticar_usuario(
 def consultar_saldo(usuario):
     return usuario.pontos
 
+
+#TROCAR SENHA
+def trocar_senha(
+        usuario, senha_atual, nova_senha
+):
+    if usuario.senha != senha_atual:
+        return False, "Senha atual incorreta."
+    
+    if not validar_senha(nova_senha): #aproveita a função de validação ja existente
+        return(
+            False, "A nova senha não atende aos requisitos."
+        )
+    usuario.senha = nova_senha
+
+    return True, "Senha alterada com sucesso."
+
+#CANCELAR PARTICIPAÇÃO (FICAR INATIVO SEM APAGAR OS DADOS DO USUARIO)
+def cancelar_participacao(usuario):
+    usuario.status = False
+    return True, "Participação cancelada com sucesso."
