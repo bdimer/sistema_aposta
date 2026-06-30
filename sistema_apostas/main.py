@@ -4,12 +4,15 @@ from usuario import Usuario
 from usuario_service import (
     cadastrar_usuario,
     autenticar_usuario,
-    consultar_saldo
+    consultar_saldo,
+    trocar_senha,
+    cancelar_participacao
 )
 
 usuarios = []
 usuario_logado = None
 
+#-- MENU GERAL ------------------------------
 while True:
     print("\n===== SISTEMA DE APOSTAS =====")
     print("1 - Cadastrar usuário")
@@ -17,7 +20,7 @@ while True:
     print("3 - Sair")
 
     opcao = input("Escolha uma opção: ")
-#--------------------------------
+#-- OPÇÃO 1 MENU GERAL ------------------------------
     if opcao == "1":
         nome = input("Nome: ")
         email = input("Email: ")
@@ -43,7 +46,7 @@ while True:
         else:
             print(resultado)
 
-#-----------------------------------
+#-- OPÇÃO 2 MENU GERAL ---------------------------------
     elif opcao == "2":
         login = input("Login: ")
         senha = input("Senha: ")
@@ -58,21 +61,48 @@ while True:
             usuario_logado = resultado
             print(f"Bem vindo, {usuario_logado.nome}!")
 
+    #ÁREA DO USUÁRIO JA LOGADO
+        #MENU USUÁRIO
             while usuario_logado is not None:
                 print("\n===== ÁREA DO USUÁRIO =====")
                 print("1 - Consultar saldo")
-                print("2 - Logout")
+                print("2 - Trocar senha")
+                print("3 - Cancelar participação")
+                print("4 - Logout")
             
                 opcao_usuario = input(
                     "Escolha uma opção: "
                 )
-                if opcao_usuario == "1":
+                if opcao_usuario == "1": #CONSULTA SALDO
                     saldo = consultar_saldo(usuario_logado)
                     print(
                         f"Saldo atual: "
                         f"{saldo} pontos"
                     )
-                elif opcao_usuario == "2":
+
+                elif opcao_usuario == "2":  #TROCAR SENHA
+                    senha_atual = input("Senha atual: ")
+                    nova_senha = input("Nova senha: ")
+                    sucesso, mensagem = trocar_senha(
+                        usuario_logado, senha_atual, nova_senha
+                    )
+                    print(mensagem)
+
+                elif opcao_usuario == "3":  #CANCELAR PARTICIPAÇÃO
+                    confirmar = input(
+                        "Tem certeza que deseja cancelar sua participação? (S/N): "
+                    ).upper()
+                    if confirmar == "S":
+                        sucesso, mensagem = cancelar_participacao(
+                            usuario_logado
+                        )
+                        print(mensagem)
+                        usuario_logado = None
+                    else:
+                        print("Operação cancelada.")
+
+
+                elif opcao_usuario == "4":  #LOGOUT
                     usuario_logado = None
                     print("Logout realizado.")
 
@@ -80,7 +110,7 @@ while True:
                     print("Opção inválida.")
 
 
-#-----------------------------------
+#-- OPÇÃO 3 MENU GERAL ---------------------------------
     elif opcao == "3":
         print("Encerrando sistema.")
         break
