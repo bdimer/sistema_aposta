@@ -1,6 +1,3 @@
-
-
-
 #- id_partida (identificador unico da partida)
 #- home_team  (quem joga em casa, time A)
 #- away_team (quem joga fora, time B)
