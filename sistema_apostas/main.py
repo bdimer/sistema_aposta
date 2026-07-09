@@ -8,16 +8,24 @@ from usuario_service import (
     trocar_senha,
     cancelar_participacao
 )
+from partida_service import (
+    criar_partida,
+    listar_partidas,
+    atualizar_resultado
+)
 
-usuarios = []
+
+usuarios = [] #lista para guardar os usuários cadastrados
 usuario_logado = None
+partidas = [] #lista para guardar as partidas
 
 #-- MENU GERAL ------------------------------
 while True:
     print("\n===== SISTEMA DE APOSTAS =====")
     print("1 - Cadastrar usuário")
     print("2 - Login")
-    print("3 - Sair")
+    print("3 - Administrador")
+    print("4 - Sair")
 
     opcao = input("Escolha uma opção: ")
 #-- OPÇÃO 1 MENU GERAL ------------------------------
@@ -110,8 +118,24 @@ while True:
                     print("Opção inválida.")
 
 
+
 #-- OPÇÃO 3 MENU GERAL ---------------------------------
     elif opcao == "3":
+        while True:
+            print("\n=== MENU DO ADMINISTRADOR ===")
+
+            print("1 - Cadastrar partida")
+            print("2 - Listar partidas")
+            print("3 - Atualizar resultado")
+            print("4 - Voltar")
+
+            opcao_admin = input("Escolha uma opção: ")
+            if opcao_admin == "4":
+                break
+
+
+#-- OPÇÃO 4 MENU GERAL ---------------------------------
+    elif opcao == "4":
         print("Encerrando sistema.")
         break
 
