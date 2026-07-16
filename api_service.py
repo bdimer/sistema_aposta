@@ -14,6 +14,7 @@ from config import (
     ENDPOINT_MATCHES
 )
 
+
 def buscar_partidas_api():
     url = BASE_URL + ENDPOINT_MATCHES
     response = requests.get(
