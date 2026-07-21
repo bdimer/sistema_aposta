@@ -5,7 +5,6 @@
 
 # api_service.py - Responsável apenas por conversar com a Football Data
 
-import requests
 
 from config import (
     BASE_URL,
