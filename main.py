@@ -14,6 +14,12 @@ from partida_service import (
     atualizar_resultado
 )
 
+#TESTE PROVISÓRIO
+from api_service import buscar_partidas_api
+dados = buscar_partidas_api()
+print(dados.keys()) #AINDA COM ERRO
+
+
 
 usuarios = [] #lista para guardar os usuários cadastrados
 usuario_logado = None
