@@ -6,7 +6,6 @@
 # api_service.py - Responsável apenas por conversar com a Football Data
 
 import requests
-print(requests.__version__)
 
 from config import (
     BASE_URL,
