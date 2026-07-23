@@ -17,7 +17,10 @@ from partida_service import (
 #TESTE PROVISÓRIO
 from api_service import buscar_partidas_api
 dados = buscar_partidas_api()
-print(dados.keys()) #AINDA COM ERRO
+if dados is None:
+    print("Não foi possivel acessar a API.")
+else:
+    print(dados["matches"][0]["homeTeam"])
 
 
 
