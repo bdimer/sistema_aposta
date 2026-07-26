@@ -13,7 +13,9 @@ from config import (
     ENDPOINT_MATCHES
 )
 
+from partida import Partida
 
+#------------------------------------------------
 def buscar_partidas_api():
     url = BASE_URL + ENDPOINT_MATCHES
     
@@ -27,3 +29,14 @@ def buscar_partidas_api():
         return dados
     
     return None 
+
+#------------------------------------------------
+
+def carregar_partidas_api():
+    dados = buscar_partidas_api()
+
+    if dados is None:
+        return []
+    
+    partidas_api = dados["matches"]
+    return partidas_api
