@@ -14,15 +14,26 @@ from partida_service import (
     atualizar_resultado
 )
 
-#TESTE PROVISÓRIO
+
+#TESTE PROVISÓRIO-------------------------------
 from api_service import buscar_partidas_api
 dados = buscar_partidas_api()
 if dados is None:
     print("Não foi possivel acessar a API.")
 else:
-    print(dados["matches"][0]["homeTeam"])
+    partida = dados["matches"][0]
+    print(partida["homeTeam"]["name"])
+    print(partida["awayTeam"]["name"])
 
+    utc = partida["utcDate"]
+    print(utc)
+    data = utc[:10]
+    hora = utc[11:16]
 
+    print(data)
+    print(hora)
+
+#---------------------------------------------------
 
 usuarios = [] #lista para guardar os usuários cadastrados
 usuario_logado = None
