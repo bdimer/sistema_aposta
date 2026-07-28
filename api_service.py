@@ -39,4 +39,21 @@ def carregar_partidas_api():
         return []
     
     partidas_api = dados["matches"]
-    return partidas_api
+    lista_partidas = []
+
+    for partida_api in partidas_api:
+        nova_partida = Partida(
+            id_partida=partida_api["id"],
+            home_team=partida_api["homeTeam"]["name"],
+            away_team=partida_api["awayTeam"]["name"],
+            data=partida_api["utcDate"][:10],
+            hora=partida_api["utcDate"][11:16],
+            fase=partida_api["stage"],
+            odd_home=0,
+            odd_draw=0,
+            odd_away=0
+        )
+
+        lista_partidas.append(nova_partida)
+
+    return lista_partidas  #----provisório
