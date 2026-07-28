@@ -1,7 +1,7 @@
 #Apenas configurações do sistema, guarda informações que podem mudar
 #Constantes
 
-API_KEY = "api key"
+API_KEY = "api key "
 
 BASE_URL = "https://api.football-data.org/v4"
 
