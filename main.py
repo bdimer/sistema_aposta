@@ -16,22 +16,14 @@ from partida_service import (
 
 
 #TESTE PROVISÓRIO-------------------------------
-from api_service import buscar_partidas_api
-dados = buscar_partidas_api()
-if dados is None:
-    print("Não foi possivel acessar a API.")
-else:
-    partida = dados["matches"][0]
-    print(partida["homeTeam"]["name"])
-    print(partida["awayTeam"]["name"])
+from api_service import carregar_partidas_api
 
-    utc = partida["utcDate"]
-    print(utc)
-    data = utc[:10]
-    hora = utc[11:16]
+partidas = carregar_partidas_api()
 
-    print(data)
-    print(hora)
+print(type(partidas))
+print(type(partidas[0]))
+print(partidas[0])
+
 
 #---------------------------------------------------
 
