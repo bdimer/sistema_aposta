@@ -41,7 +41,7 @@ class Partida:
     def __str__(self): #transforma o objeto em texto facil de ler
         return(
             f"ID: {self.id_partida}\n"
-            f"Partida: {self.home_team}\n"
+            f"Partida: {self.home_team} x {self.away_team}\n"
             f"Data: {self.data} as {self.hora}\n"
             f"Fase: {self.fase}\n"
             f"Status: {self.status}"
