@@ -13,16 +13,9 @@ from partida_service import (
     listar_partidas,
     atualizar_resultado
 )
-
-
-#TESTE PROVISÓRIO-------------------------------
 from api_service import carregar_partidas_api
 
-partidas = carregar_partidas_api()
-
-print(type(partidas))
-print(type(partidas[0]))
-print(partidas[0])
+#TESTE PROVISÓRIO-------------------------------
 
 
 #---------------------------------------------------
