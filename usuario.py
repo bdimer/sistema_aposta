@@ -19,7 +19,7 @@ class Usuario:
         self.senha = senha
 
         # Valores definidos pelo sistema
-        self.pontos = 100
+        self.saldo = 100
         self.status = "ativo"
     
     #----------------------------------------
@@ -29,6 +29,6 @@ class Usuario:
             f"Nome: {self.nome}\n" #\n faz quebra de linha 
             f"Email: {self.email}\n"
             f"CPF: {self.cpf}\n"
-            f"Pontos: {self.pontos}\n"
+            f"Saldo: {self.saldo}\n"
             f"Status: {self.status}"
         )
