@@ -22,7 +22,8 @@ class Partida:
         fase,
         odd_home,
         odd_draw,
-        odd_away
+        odd_away,
+        status
     ):
         self.id_partida = id_partida
         self.home_team = home_team
@@ -35,7 +36,7 @@ class Partida:
         self.odd_away = odd_away
         self.home_score = None
         self.away_score = None
-        self.status = "AGENDADA"
+        self.status = status
     
 
     def __str__(self): #transforma o objeto em texto facil de ler
