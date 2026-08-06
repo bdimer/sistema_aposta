@@ -1,6 +1,8 @@
 #CAMADA DE APRESENTAÇÃO
 
+#-- IMPORTAÇÕES ----------------------------
 from usuario import Usuario
+
 from usuario_service import (
     cadastrar_usuario,
     autenticar_usuario,
@@ -8,21 +10,28 @@ from usuario_service import (
     trocar_senha,
     cancelar_participacao
 )
+
 from partida_service import (
     criar_partida,
     listar_partidas,
     atualizar_resultado
 )
+
 from api_service import carregar_partidas_api
 
-#TESTE PROVISÓRIO-------------------------------
+from aposta_service import (
+    criar_aposta,
+    listar_aposta,
+    buscar_aposta
+)
 
 
-#---------------------------------------------------
-
+#-- DADOS DO SISTEMA -----------------------
 usuarios = [] #lista para guardar os usuários cadastrados
 usuario_logado = None
-partidas = [] #lista para guardar as partidas
+
+partidas = carregar_partidas_api()
+apostas = []
 
 #-- MENU GERAL ------------------------------
 while True:
@@ -74,18 +83,23 @@ while True:
             usuario_logado = resultado
             print(f"Bem vindo, {usuario_logado.nome}!")
 
-    #ÁREA DO USUÁRIO JA LOGADO
-        #MENU USUÁRIO
+    #-- ÁREA DO USUÁRIO JA LOGADO --------------------------
+        #-- MENU USUÁRIO --
             while usuario_logado is not None:
                 print("\n===== ÁREA DO USUÁRIO =====")
                 print("1 - Consultar saldo")
-                print("2 - Trocar senha")
-                print("3 - Cancelar participação")
-                print("4 - Logout")
+                print("2 - Listar partidas")
+                print("3 - Fazer aposta") #-- falta
+                print("4 - Minhas apostas") #-- falta
+                print("5 - Ranking") #-- falta
+                print("6 - Trocar senha")
+                print("7 - Cancelar participação")
+                print("8 - Logout")
             
                 opcao_usuario = input(
                     "Escolha uma opção: "
                 )
+        #-- OPÇÃO 1 --
                 if opcao_usuario == "1": #CONSULTA SALDO
                     saldo = consultar_saldo(usuario_logado)
                     print(
@@ -93,7 +107,13 @@ while True:
                         f"{saldo} pontos"
                     )
 
-                elif opcao_usuario == "2":  #TROCAR SENHA
+        #-- OPÇÃO 2 --
+                elif opcao_usuario == "2":
+                    print(listar_partidas(partidas))
+
+
+        #-- OPÇÃO 6 --
+                elif opcao_usuario == "6":  #TROCAR SENHA
                     senha_atual = input("Senha atual: ")
                     nova_senha = input("Nova senha: ")
                     sucesso, mensagem = trocar_senha(
@@ -101,7 +121,8 @@ while True:
                     )
                     print(mensagem)
 
-                elif opcao_usuario == "3":  #CANCELAR PARTICIPAÇÃO
+        #-- OPÇÃO 7 --
+                elif opcao_usuario == "7":  #CANCELAR PARTICIPAÇÃO
                     confirmar = input(
                         "Tem certeza que deseja cancelar sua participação? (S/N): "
                     ).upper()
@@ -114,8 +135,8 @@ while True:
                     else:
                         print("Operação cancelada.")
 
-
-                elif opcao_usuario == "4":  #LOGOUT
+        #-- OPÇÃO 8 --
+                elif opcao_usuario == "8":  #LOGOUT
                     usuario_logado = None
                     print("Logout realizado.")
 
@@ -129,13 +150,16 @@ while True:
         while True:
             print("\n=== MENU DO ADMINISTRADOR ===")
 
-            print("1 - Cadastrar partida")
+            print("1 - Atualizar partidas pela API")
             print("2 - Listar partidas")
             print("3 - Atualizar resultado")
-            print("4 - Voltar")
+            print("4 - Encerrar apostas")
+            print("5 - Calcular resultados")
+            print("6 - Ranking")
+            print("7 - Voltar")
 
             opcao_admin = input("Escolha uma opção: ")
-            if opcao_admin == "4":
+            if opcao_admin == "7":
                 break
 
 
