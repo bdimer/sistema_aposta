@@ -164,7 +164,7 @@ def autenticar_usuario(
 
 #CONSULTAR SALDO USUARIO
 def consultar_saldo(usuario):
-    return usuario.pontos
+    return usuario.saldo
 
 
 #TROCAR SENHA
