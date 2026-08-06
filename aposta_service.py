@@ -20,7 +20,7 @@ def criar_aposta(
     if valor_apostado <= 0:
         return "O valor apostado deve ser maior que zero."
 
-    if valor_apostado > usuario.pontos:
+    if valor_apostado > usuario.saldo:
         return "Saldo insuficiente para realizar a aposta."
 
     usuario.saldo -= valor_apostado #desconta os pontos apostados
