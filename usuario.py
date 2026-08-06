@@ -1,4 +1,7 @@
-#CAMADA DE DADOS
+#-- Classe responsável por representar um usuário do sistema.
+#-- Armazena apenas os dados do usuário.
+#-- As regras de negócio ficam em usuario_service.py
+
 
 class Usuario:
 
