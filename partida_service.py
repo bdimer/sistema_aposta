@@ -11,6 +11,7 @@ def criar_partida(
         odd_home,
         odd_draw,
         odd_away,
+        status,
         partidas
 ):
     nova_partida = Partida(
@@ -22,7 +23,8 @@ def criar_partida(
         fase,
         odd_home,
         odd_draw,
-        odd_away
+        odd_away,
+        status
     )
     partidas.append(nova_partida)
 
