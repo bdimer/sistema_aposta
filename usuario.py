@@ -23,7 +23,7 @@ class Usuario:
 
         # Valores definidos pelo sistema
         self.saldo = 100
-        self.status = "ativo"
+        self.status = True
     
     #----------------------------------------
     def __str__(self):
