@@ -14,6 +14,7 @@ from usuario_service import (
 from partida_service import (
     criar_partida,
     listar_partidas,
+    buscar_partida_por_id,
     atualizar_resultado
 )
 
@@ -32,6 +33,59 @@ usuario_logado = None
 
 partidas = carregar_partidas_api()
 apostas = []
+
+def menu_fazer_aposta(usuario, partidas, apostas):
+    prin("\n==== FAZER APOSTA ====")
+
+    print(listar_partidas(partidas))
+
+    try:
+        id_partida = int(input("Digite o ID da partida: "))
+    except ValueError:
+        print("ID da partida deve ser um número.")
+        return
+
+    partida = buscar_partida(id_partida, partidas)
+
+    if partida is None:
+        print("Partida não encontrada.")
+        return
+
+    if partida.status != "SCHEDULED":
+        print("Esta partida não está disponível para apostas.")
+        return
+
+    print(
+        f"\nVocê escolheu: "
+        f"{partida.home_team}x{partida.away_team}"
+    )
+    try:
+        gols_home = int(
+            input(f"Gols de {partida.home_team}: ")
+        )
+        gols_away = int(
+        input(f"Gols de {partida.away_team}: ")
+
+        )
+        valor_apostado = float(
+            input("Quantidade de pontos para apostar: ")
+        )
+
+    except ValueError:
+        print("Digite apenas valores numéricos.")
+        return
+
+    sucesso, mensagem = criar_aposta(
+        usuario,
+        partida,
+        gols_home,
+        gols_away,
+        valor_apostado,
+        apostas
+    )
+    print(mensagem)
+
+partida = buscar_partida_por_id(id_partida, partidas)
 
 #-- MENU GERAL ------------------------------
 while True:
@@ -89,7 +143,7 @@ while True:
                 print("\n===== ÁREA DO USUÁRIO =====")
                 print("1 - Consultar saldo")
                 print("2 - Listar partidas")
-                print("3 - Fazer aposta") #-- falta
+                print("3 - Fazer aposta") 
                 print("4 - Minhas apostas") #-- falta
                 print("5 - Ranking") #-- falta
                 print("6 - Trocar senha")
@@ -111,6 +165,17 @@ while True:
                 elif opcao_usuario == "2":
                     print(listar_partidas(partidas))
 
+        #-- OPÇÃO 3 --
+                elif opcao_usuario == "3":
+                    menu_fazer_aposta(
+                        usuario_logado,
+                        partidas,
+                        apostas
+                    )
+
+        #-- OPÇÃO 4 --
+
+        #-- OPÇÃO 5 --
 
         #-- OPÇÃO 6 --
                 elif opcao_usuario == "6":  #TROCAR SENHA
