@@ -24,7 +24,7 @@ def criar_partida(
         odd_home,
         odd_draw,
         odd_away,
-        status
+        "SCHEDULED"
     )
     partidas.append(nova_partida)
 
@@ -64,7 +64,7 @@ def atualizar_resultado(
     
     partida.home_score = home_score
     partida.away_score = away_score
-    partida.status = "ENCERRADA" 
+    partida.status = "FINISHED" 
     return True, "Resultado atualizado com sucesso."
 
 
