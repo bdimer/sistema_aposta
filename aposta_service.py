@@ -12,16 +12,22 @@ def criar_aposta(
         apostas
 ):
 
-    id_aposta = len(apostas) + 1
+    if usuario.status:
+        return False, "Usuário inativo."
+
+    if partida.status != "SCHEDULED": #uma partida FINISHED, IN_PLAY ou qualquer outro status não poderá receber novas apostas
+        return False, "Esta partida não está disponível para apostas."
 
     if gols_home < 0 or gols_away < 0: #verifica se os gols são validos
-        return "Os gols não podem ser negativos."
+        return False, "Os gols não podem ser negativos."
 
     if valor_apostado <= 0:
-        return "O valor apostado deve ser maior que zero."
+        return False, "O valor apostado deve ser maior que zero."
 
     if valor_apostado > usuario.saldo:
-        return "Saldo insuficiente para realizar a aposta."
+        return False, "Saldo insuficiente para realizar a aposta."
+
+    id_aposta = len(apostas) + 1
 
     usuario.saldo -= valor_apostado #desconta os pontos apostados
 
@@ -36,7 +42,7 @@ def criar_aposta(
 
     apostas.append(nova_aposta)
 
-    return "Aposta registrada com sucesso!"
+    return True, "Aposta registrada com sucesso!"
 
 #-------------------------------------
 
