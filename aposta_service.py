@@ -12,7 +12,7 @@ def criar_aposta(
         apostas
 ):
 
-    if usuario.status:
+    if not usuario.status:
         return False, "Usuário inativo."
 
     if partida.status != "SCHEDULED": #uma partida FINISHED, IN_PLAY ou qualquer outro status não poderá receber novas apostas
