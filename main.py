@@ -34,18 +34,20 @@ usuario_logado = None
 partidas = carregar_partidas_api()
 apostas = []
 
+#---------
+
 def menu_fazer_aposta(usuario, partidas, apostas):
-    prin("\n==== FAZER APOSTA ====")
+    print("\n==== FAZER APOSTA ====")
 
     print(listar_partidas(partidas))
 
     try:
         id_partida = int(input("Digite o ID da partida: "))
     except ValueError:
-        print("ID da partida deve ser um número.")
+        print("O ID da partida deve ser um número.")
         return
 
-    partida = buscar_partida(id_partida, partidas)
+    partida = buscar_partida_por_id(id_partida, partidas)
 
     if partida is None:
         print("Partida não encontrada.")
@@ -85,21 +87,14 @@ def menu_fazer_aposta(usuario, partidas, apostas):
     )
     print(mensagem)
 
-partida = buscar_partida_por_id(id_partida, partidas)
+#-----------
 
-#-- MENU GERAL ------------------------------
-while True:
-    print("\n===== SISTEMA DE APOSTAS =====")
-    print("1 - Cadastrar usuário")
-    print("2 - Login")
-    print("3 - Administrador")
-    print("4 - Sair")
+def menu_cadastro_usuario(usuarios):
+    while True:
+        print("\n==== CADASTRO DE USUÁRIO ====")
 
-    opcao = input("Escolha uma opção: ")
-#-- OPÇÃO 1 MENU GERAL ------------------------------
-    if opcao == "1":
         nome = input("Nome: ")
-        email = input("Email: ")
+        email = input("E-mail: ")
         cpf = input("CPF: ")
         data_nascimento = input(
             "Data de nascimento (dd/mm/aaaa): "
@@ -119,8 +114,30 @@ while True:
         if sucesso:
             print("\n- Cadastro realizado com sucesso! -")
             print(resultado)
-        else:
-            print(resultado)
+            return
+
+        print(f"\nErro: {resultado}")
+        
+        tentar_novamente = input(
+            "Deseja tentar novamente? (S/N): "
+        ).upper()
+        if tentar_novamente != "S":
+            return
+
+        
+
+#-- MENU GERAL ------------------------------
+while True:
+    print("\n===== SISTEMA DE APOSTAS =====")
+    print("1 - Cadastrar usuário")
+    print("2 - Login")
+    print("3 - Administrador")
+    print("4 - Sair")
+
+    opcao = input("Escolha uma opção: ")
+#-- OPÇÃO 1 MENU GERAL ------------------------------
+    if opcao == "1":
+        menu_cadastro_usuario(usuarios)
 
 #-- OPÇÃO 2 MENU GERAL ---------------------------------
     elif opcao == "2":
