@@ -186,3 +186,10 @@ def trocar_senha(
 def cancelar_participacao(usuario):
     usuario.status = False
     return True, "Participação cancelada com sucesso."
+
+
+def buscar_usuario_por_login(login, usuarios):
+    for usuario in usuarios:
+        if usuario.login == login:
+            return usuario
+    return None
