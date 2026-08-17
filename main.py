@@ -8,7 +8,8 @@ from usuario_service import (
     autenticar_usuario,
     consultar_saldo,
     trocar_senha,
-    cancelar_participacao
+    cancelar_participacao,
+    buscar_usuario_por_login
 )
 
 from partida_service import (
@@ -124,6 +125,37 @@ def menu_cadastro_usuario(usuarios):
         if tentar_novamente != "S":
             return
 
+#-----------
+
+def menu_login_usuario(usuarios):
+    while True:
+        print("\n==== LOGIN ====")
+
+        login = input("Login: ")
+        usuario = buscar_usuario_por_login(login, usuarios)
+
+        if usuario is None:
+            print("Usuário não encontrado.")
+            tentar_novamente = input("Deseja tentar novamente? (S/N): ").upper()
+            if tentar_novamente != "S":
+                return None
+            continue
+
+        if not usuario.status:
+            print("Usuário inativo.")
+            return None
+
+        while True:
+            senha = input("Senha: ")
+
+            if usuario.senha == senha:
+                print(f"Bem-vindo, {usuario.nome}!")
+                return usuario
+
+            print("Senha incorreta.")
+            tentar_novamente = input("Deseja tentar novamente? (S/N): ").upper()
+            if tentar_novamente != "S":
+                return None
         
 
 #-- MENU GERAL ------------------------------
@@ -141,21 +173,11 @@ while True:
 
 #-- OPÇÃO 2 MENU GERAL ---------------------------------
     elif opcao == "2":
-        login = input("Login: ")
-        senha = input("Senha: ")
-
-        sucesso, resultado = autenticar_usuario(
-            login,
-            senha,
-            usuarios
-        )
-
-        if sucesso:
-            usuario_logado = resultado
-            print(f"Bem vindo, {usuario_logado.nome}!")
+        usuario_logado = menu_login_usuario(usuarios)
 
     #-- ÁREA DO USUÁRIO JA LOGADO --------------------------
         #-- MENU USUÁRIO --
+        if usuario_logado is not None:
             while usuario_logado is not None:
                 print("\n===== ÁREA DO USUÁRIO =====")
                 print("1 - Consultar saldo")
@@ -167,15 +189,11 @@ while True:
                 print("7 - Cancelar participação")
                 print("8 - Logout")
             
-                opcao_usuario = input(
-                    "Escolha uma opção: "
-                )
+                opcao_usuario = input("Escolha uma opção: ")
         #-- OPÇÃO 1 --
                 if opcao_usuario == "1": #CONSULTA SALDO
                     saldo = consultar_saldo(usuario_logado)
-                    print(
-                        f"Saldo atual: "
-                        f"{saldo} pontos"
+                    print(f"Saldo atual: {saldo} pontos"
                     )
 
         #-- OPÇÃO 2 --
@@ -184,11 +202,7 @@ while True:
 
         #-- OPÇÃO 3 --
                 elif opcao_usuario == "3":
-                    menu_fazer_aposta(
-                        usuario_logado,
-                        partidas,
-                        apostas
-                    )
+                    menu_fazer_aposta(usuario_logado, partidas, apostas)
 
         #-- OPÇÃO 4 --
 
