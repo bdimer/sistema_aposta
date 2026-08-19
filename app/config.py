@@ -1,12 +1,9 @@
+
 """Centraliza e valida as configurações usadas pelo backend."""
 
-# Importa os para permitir a leitura das variáveis do sistema operacional.
 import os
-# Importa Path para montar um caminho absoluto e portável para o banco SQLite.
 from pathlib import Path
-# Importa load_dotenv para copiar as variáveis do arquivo .env para o ambiente.
 from dotenv import load_dotenv
-# Importa BaseModel para validar os tipos das configurações da aplicação.
 from pydantic import BaseModel, ConfigDict
 
 # Calcula a pasta raiz do projeto subindo um nível a partir da pasta app.
