@@ -390,3 +390,157 @@ def test_resultado_exige_chave_administrativa(
         response.json()["detail"]
         == "Chave administrativa não informada."
     )
+
+
+#-------------
+# Testa as operações administrativas exigidas na apresentação.
+def test_admin_cria_e_pesquisa_aposta_e_usuario(
+    client: TestClient,
+    database: Session,
+) -> None:
+    """Confirma criação e pesquisa administrativa de dados."""
+
+    # Cria um usuário e obtém JWT com chave administrativa.
+    headers = criar_usuario_autenticado(client)
+
+    # Consulta o perfil para descobrir o ID interno.
+    perfil = client.get(
+        "/usuarios/me",
+        headers=headers,
+    )
+
+    # Obtém o identificador do usuário cadastrado.
+    usuario_id = perfil.json()["id"]
+
+    # Cria uma partida disponível para a aposta.
+    partida = criar_partida_agendada(
+        database,
+        external_id=1005,
+    )
+
+    # O administrador cria uma aposta para o usuário.
+    criacao = client.post(
+        "/admin/apostas",
+        headers=headers,
+        json={
+            "usuario_id": usuario_id,
+            "partida_id": partida.id,
+            "gols_casa": 2,
+            "gols_visitante": 1,
+            "valor_apostado": "10.00",
+        },
+    )
+
+    # Confirma que a aposta foi criada.
+    assert criacao.status_code == 201
+
+    # Obtém o ID da aposta criada.
+    aposta_id = criacao.json()["id"]
+
+    # O administrador pesquisa a aposta pelo ID.
+    pesquisa_aposta = client.get(
+        f"/admin/apostas/{aposta_id}",
+        headers=headers,
+    )
+
+    # Confirma que a aposta foi encontrada.
+    assert pesquisa_aposta.status_code == 200
+
+    # Confirma o proprietário da aposta.
+    assert pesquisa_aposta.json()["usuario_id"] == usuario_id
+
+    # O administrador solicita todos os usuários.
+    usuarios = client.get(
+        "/admin/usuarios",
+        headers=headers,
+    )
+
+    # Confirma que a listagem funcionou.
+    assert usuarios.status_code == 200
+
+    # Confirma que existe um usuário na lista.
+    assert len(usuarios.json()) == 1
+
+    # O administrador pesquisa o usuário específico.
+    pesquisa_usuario = client.get(
+        f"/admin/usuarios/{usuario_id}",
+        headers=headers,
+    )
+
+    # Confirma que o usuário foi encontrado.
+    assert pesquisa_usuario.status_code == 200
+
+    # Confirma que a senha não foi exposta.
+    assert "senha_hash" not in pesquisa_usuario.json()
+
+
+# Testa que a listagem ativa exclui apostas já liquidadas.
+def test_listar_somente_apostas_ativas(
+    client: TestClient,
+    database: Session,
+) -> None:
+    """Confirma que /minhas/ativas devolve somente PENDING."""
+
+    # Cria um usuário autenticado.
+    headers = criar_usuario_autenticado(client)
+
+    # Cria uma partida que continuará pendente.
+    partida_pendente = criar_partida_agendada(
+        database,
+        external_id=1006,
+    )
+
+    # Cria outra partida que será encerrada.
+    partida_encerrada = criar_partida_agendada(
+        database,
+        external_id=1007,
+    )
+
+    # Registra uma aposta que permanecerá ativa.
+    aposta_pendente = client.post(
+        "/apostas",
+        headers=headers,
+        json={
+            "partida_id": partida_pendente.id,
+            "gols_casa": 1,
+            "gols_visitante": 0,
+            "valor_apostado": "10.00",
+        },
+    )
+
+    # Registra outra aposta para ser liquidada.
+    client.post(
+        "/apostas",
+        headers=headers,
+        json={
+            "partida_id": partida_encerrada.id,
+            "gols_casa": 2,
+            "gols_visitante": 0,
+            "valor_apostado": "10.00",
+        },
+    )
+
+    # Encerra a segunda partida.
+    liquidacao = client.patch(
+        f"/partidas/{partida_encerrada.id}/resultado",
+        headers=headers,
+        json={
+            "gols_casa": 2,
+            "gols_visitante": 0,
+        },
+    )
+
+    assert liquidacao.status_code == 200
+
+    ativas = client.get(
+        "/apostas/minhas/ativas",
+        headers=headers,
+    )
+
+    assert ativas.status_code == 200
+
+    assert len(ativas.json()) == 1
+
+    assert ativas.json()[0]["id"] == aposta_pendente.json()["id"]
+
+    assert ativas.json()[0]["status"] == "PENDING"
