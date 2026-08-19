@@ -6,6 +6,7 @@ from app.models.enums import StatusPartida
 from app.routes.dependencies import (
     DatabaseDependency,
     UsuarioAtualDependency,
+    AdminDependency,
 )
 from app.schemas.partida import (
     LiquidacaoResponse,
@@ -40,15 +41,15 @@ router = APIRouter(
 def sincronizar(
     database: DatabaseDependency,
     usuario_atual: UsuarioAtualDependency,
+    admin_key: AdminDependency,
 ) -> SincronizacaoResponse:
     """Importa ou atualiza partidas utilizando a API externa."""
 
-    # A variável comprova que a rota exigiu autenticação.
     del usuario_atual
+    del admin_key
 
     try:
         return sincronizar_partidas(database)
-    # Captura ausência de chave, falha de rede ou resposta externa inválida.
     except ErroFootballAPI as erro:
         # HTTP 502 indica falha em um serviço externo utilizado pela API.
         raise HTTPException(
@@ -122,23 +123,20 @@ def atualizar_resultado(
     dados: ResultadoPartidaUpdate,
     database: DatabaseDependency,
     usuario_atual: UsuarioAtualDependency,
+    admin_key: AdminDependency,
 ) -> LiquidacaoResponse:
     """Finaliza uma partida e distribui os pontos das apostas."""
 
-    # A autenticação já foi validada pela dependência.
-    # Futuramente este usuário deverá possuir perfil administrativo.
     del usuario_atual
+    del admin_key
 
-    # Inicia o tratamento dos erros conhecidos da liquidação.
     try:
-        # Processa placar, apostas, créditos e possíveis falências.
         return liquidar_partida(
             database,
             partida_id,
             dados,
         )
 
-    # Captura partida inexistente, encerrada ou cancelada.
     except ErroRegraResultado as erro:
         # Responde com HTTP 400 para uma operação recusada.
         raise HTTPException(
