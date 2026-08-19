@@ -1,37 +1,24 @@
+
 """Implementa as regras de negócio relacionadas aos usuários."""
 
-# Importa date para calcular a idade usando uma data real
 from datetime import date
-
-# Importa re para remover pontuação do CPF
 import re
-
-# importa Session para trabalhar com uma trnasação do banco
 from sqlalchemy.orm import Session
-
-# Importa erros gerais do SQLAlchemy para proteger transações
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-
-# Importa o modelo ORM que será armazenado na tabela de usuarios
 from app.models.usuario import Usuario
-
-# Importa as funções que acessam diretamente o banco
 from app.repositories.usuario_repository import(
     adicionar_usuario,
     atualizar_usuario,
     buscar_usuario_por_cpf,
     buscar_usuario_por_email,
     buscar_usuario_por_login,
+    listar_usuarios_ranking,
 )
-
-# Importa schemas validados que chegam pelas futuras rotas
 from app.schemas.usuario import (
     TrocaSenha,
     UsuarioCreate,
     UsuarioLogin,
 )
-
-# Importa as funções responsáveis pela proteção das senhas
 from app.services.security import (
     gerar_hash_senha,
     verificar_senha,
@@ -41,7 +28,6 @@ from app.services.security import (
 # cria uma exceção específica para violação de regras do sistema
 class ErroRegraNegocio(ValueError):
     """Representa uma operação recusada por uma regra de negócio."""
-
 # Cria uma exceção para falha inesperada de persistência
 class ErroPersistencia(RuntimeError):
     """Representa uma falha ao ler ou gravar dados no banco."""
@@ -68,7 +54,6 @@ def validar_maioridade(data_nascimento: date) -> bool:
         data_nascimento.month,
         data_nascimento.day,
     )
-
     if aniversario_ainda_nao_ocorreu:
         idade -= 1
 
