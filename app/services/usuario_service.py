@@ -18,6 +18,7 @@ from app.schemas.usuario import (
     TrocaSenha,
     UsuarioCreate,
     UsuarioLogin,
+    RankingUsuarioResponse,
 )
 from app.services.security import (
     gerar_hash_senha,
@@ -291,4 +292,32 @@ def inativar_usuario(
         ) from erro
 
 
-# ainda falta função de 'falência' que inativa usuario sem pontos
+#------
+# Monta o ranking público usando o saldo dos usuários.
+def consultar_ranking(
+    database: Session,
+) -> list[RankingUsuarioResponse]:
+    """Retorna usuários ativos e inativos ordenados pelo saldo."""
+
+    usuarios = listar_usuarios_ranking(
+        database
+    )
+    ranking: list[RankingUsuarioResponse] = []
+
+    # Enumera os usuários começando a posição em um.
+    for posicao, usuario in enumerate(
+        usuarios,
+        start=1,
+    ):
+        # Cria uma entrada sem dados sensíveis.
+        item_ranking = RankingUsuarioResponse(
+            posicao=posicao,
+            usuario_id=usuario.id,
+            nome=usuario.nome,
+            saldo=usuario.saldo,
+            ativo=usuario.ativo,
+        )
+        ranking.append(item_ranking)
+
+    # Devolve a classificação completa.
+    return ranking
