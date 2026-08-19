@@ -11,6 +11,7 @@ from app.config import settings
 from app.database import create_database_tables
 from app.routes.partida_routes import router as partida_router
 from app.routes.usuario_routes import router as usuario_router
+from app.routes.aposta_routes import router as aposta_router
 
 
 # Converte a função em um gerenciador do ciclo de vida da aplicação.
@@ -31,14 +32,12 @@ app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan)
 
 # Adiciona todas as rotas de usuários à aplicação principal.
 app.include_router(usuario_router)
-# Adiciona todas as rotas de partidas à aplicação principal.
 app.include_router(partida_router)
+app.include_router(aposta_router)
 
-# Registra uma rota GET simples usada para confirmar que o backend está vivo.
 @app.get("/health", tags=["Sistema"])
-# Define o tipo exato da resposta, permitindo validação automática pelo FastAPI.
+
 def health_check() -> dict[str, str]:
     """Retorna o estado básico da aplicação sem consultar dados privados."""
 
-    # Devolve um dicionário que o FastAPI transforma automaticamente em JSON.
     return {"status": "ok"}
