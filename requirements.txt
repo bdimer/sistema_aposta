@@ -4,7 +4,7 @@ fastapi==0.116.1
 # SQLAlchemy é o ORM responsável por mapear classes Python para tabelas SQL.
 SQLAlchemy==2.0.43
 
-# Pydantic valida configurações e, nas próximas fases, entradas e saídas da API.
+# Pydantic valida configurações, entradas e saídas da API.
 pydantic==2.12.5
 
 # Uvicorn é o servidor local que executa a aplicação FastAPI.
@@ -27,3 +27,9 @@ PyJWT>=2.10,<3
 
 # Permite que o FastAPI receba formulários usados pelo login OAuth2.
 python-multipart>=0.0.20,<1
+
+# Pytest executa e organiza os testes automatizados.
+pytest>=8.4,<9
+
+# HTTPX permite testar endpoints FastAPI sem abrir um servidor real.
+httpx>=0.28,<1
