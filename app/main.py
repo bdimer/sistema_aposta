@@ -1,12 +1,8 @@
 """Cria a aplicação HTTP e inicializa a estrutura do banco de dados."""
 
-# Importa AsyncIterator para documentar o tipo do ciclo de vida assíncrono.
 from collections.abc import AsyncIterator
-# Importa asynccontextmanager para executar ações ao iniciar e encerrar a API.
 from contextlib import asynccontextmanager
-# Importa FastAPI, classe central que recebe configuração e registra rotas.
 from fastapi import FastAPI
-# Importa as configurações e a função que cria tabelas ausentes.
 from app.config import settings
 from app.database import create_database_tables
 from app.routes.partida_routes import router as partida_router
