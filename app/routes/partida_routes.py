@@ -8,7 +8,9 @@ from app.routes.dependencies import (
     UsuarioAtualDependency,
 )
 from app.schemas.partida import (
+    LiquidacaoResponse,
     PartidaResponse,
+    ResultadoPartidaUpdate,
     SincronizacaoResponse,
 )
 from app.services.partida_service import (
@@ -18,6 +20,12 @@ from app.services.partida_service import (
     obter_partida,
     sincronizar_partidas,
 )
+from app.services.resultado_service import ( #Importa erros controlados
+    ErroPersistenciaResultado,
+    ErroRegraResultado,
+    liquidar_partida,
+)
+
 
 # Cria um grupo de rotas iniciado por /partidas.
 router = APIRouter(
@@ -100,5 +108,48 @@ def consultar(
         # HTTP 404 informa que o recurso solicitado não existe.
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(erro),
+        ) from erro
+
+
+# Cria o endpoint que registra o placar e liquida as apostas.
+@router.patch(
+    "/{partida_id}/resultado",
+    response_model=LiquidacaoResponse,
+)
+def atualizar_resultado(
+    partida_id: int,
+    dados: ResultadoPartidaUpdate,
+    database: DatabaseDependency,
+    usuario_atual: UsuarioAtualDependency,
+) -> LiquidacaoResponse:
+    """Finaliza uma partida e distribui os pontos das apostas."""
+
+    # A autenticação já foi validada pela dependência.
+    # Futuramente este usuário deverá possuir perfil administrativo.
+    del usuario_atual
+
+    # Inicia o tratamento dos erros conhecidos da liquidação.
+    try:
+        # Processa placar, apostas, créditos e possíveis falências.
+        return liquidar_partida(
+            database,
+            partida_id,
+            dados,
+        )
+
+    # Captura partida inexistente, encerrada ou cancelada.
+    except ErroRegraResultado as erro:
+        # Responde com HTTP 400 para uma operação recusada.
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(erro),
+        ) from erro
+
+    # Captura falhas inesperadas durante a transação.
+    except ErroPersistenciaResultado as erro:
+        # Responde sem expor detalhes internos do banco.
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(erro),
         ) from erro
