@@ -91,3 +91,23 @@ class SincronizacaoResponse(BaseModel):
 
     # Quantidade de partidas existentes que receberam novos dados.
     partidas_atualizadas: int
+
+
+# Define o resumo devolvido depois de processar um resultado.
+class LiquidacaoResponse(BaseModel):
+    """Resume os efeitos da liquidação de uma partida."""
+
+    # Identifica a partida processada.
+    partida_id: int
+    # Mostra o placar final em formato textual.
+    placar: str
+    # Conta quantas apostas receberam prêmio.
+    apostas_vencedoras: int
+    # Conta quantas apostas foram definitivamente perdidas.
+    apostas_perdedoras: int
+    # Conta quantas apostas foram devolvidas.
+    apostas_devolvidas: int
+    # Conta contas inativadas por falência.
+    usuarios_inativados: int
+    # Soma todos os prêmios e valores devolvidos.
+    total_creditado: Decimal
