@@ -9,6 +9,7 @@ from fastapi import FastAPI
 # Importa as configurações e a função que cria tabelas ausentes.
 from app.config import settings
 from app.database import create_database_tables
+from app.routes.partida_routes import router as partida_router
 from app.routes.usuario_routes import router as usuario_router
 
 
@@ -30,6 +31,8 @@ app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan)
 
 # Adiciona todas as rotas de usuários à aplicação principal.
 app.include_router(usuario_router)
+# Adiciona todas as rotas de partidas à aplicação principal.
+app.include_router(partida_router)
 
 # Registra uma rota GET simples usada para confirmar que o backend está vivo.
 @app.get("/health", tags=["Sistema"])
