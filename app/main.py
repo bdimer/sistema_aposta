@@ -8,6 +8,7 @@ from app.database import create_database_tables
 from app.routes.partida_routes import router as partida_router
 from app.routes.usuario_routes import router as usuario_router
 from app.routes.aposta_routes import router as aposta_router
+from app.routes.admin_routes import router as admin_router
 
 
 # Converte a função em um gerenciador do ciclo de vida da aplicação.
@@ -30,6 +31,7 @@ app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan)
 app.include_router(usuario_router)
 app.include_router(partida_router)
 app.include_router(aposta_router)
+app.include_router(admin_router)
 
 @app.get("/health", tags=["Sistema"])
 
