@@ -16,6 +16,7 @@ from app.services.aposta_service import (
     consultar_apostas_usuario,
     criar_aposta,
     multiplicar_aposta,
+    consultar_apostas_ativas_usuario,
 )
 
 # Cria um grupo de endpoints iniciado por /apostas.
@@ -72,6 +73,24 @@ def listar_minhas_apostas(
         database,
         usuario_atual,
     )
+
+
+# Lista somente as apostas que ainda aguardam resultado.
+@router.get(
+    "/minhas/ativas",
+    response_model=list[ApostaResponse],
+)
+def listar_minhas_apostas_ativas(
+    database: DatabaseDependency,
+    usuario_atual: UsuarioAtualDependency,
+) -> list[ApostaResponse]:
+    """Retorna somente apostas com status PENDING."""
+
+    return consultar_apostas_ativas_usuario(
+        database,
+        usuario_atual,
+    )
+
 
 
 # Multiplica uma aposta pendente por um fator de x2 a x5.
