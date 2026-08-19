@@ -1,25 +1,22 @@
+
 """Define dependências compartilhadas pelas rotas da aplicação."""
 
-# Importa Annotated para associar python a dependencia FastAPI
+
 from typing import Annotated
-
-# Importa recursos usados para receber dependencias e gerar erros HTTP
-from fastapi import Depends, HTTPException, status
-
-#Importa o leitor do padrão Authorization: Bearer <token>
+from fastapi import (
+    Depends, Header, HTTPException, status,
+)
 from fastapi.security import OAuth2PasswordBearer
-
 from sqlalchemy.orm import Session
-
 from app.database import get_db
-
 from app.models.usuario import Usuario
-
 from app.repositories.usuario_repository import(
     buscar_usuario_por_id #procura usuario pela chave primaria
 )
-#importa a função que valida o JWT e extrai seu usuario
 from app.services.security import obter_usuario_id_token
+from app.config import settings
+from secrets import compare_digest
+
 
 #informa swagger onde cliente pode conseguir token
 oauth2_scheme = OAuth2PasswordBearer(
@@ -78,4 +75,40 @@ def obter_usuario_atual(
 UsuarioAtualDependency = Annotated[
     Usuario,
     Depends(obter_usuario_atual),
+]
+
+
+#-----
+# Valida o cabeçalho administrativo enviado na requisição.
+def validar_admin_key(
+    admin_key: Annotated[
+        str | None,
+        Header(alias="X-Admin-Key"),
+    ] = None,
+) -> str:
+    """Aceita somente a chave administrativa configurada no servidor."""
+
+    if admin_key is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Chave administrativa não informada.",
+        )
+
+    chave_valida = compare_digest(
+        admin_key,
+        settings.admin_key,
+    )
+
+    if not chave_valida:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Chave administrativa inválida.",
+        )
+    return admin_key
+
+
+# Cria um tipo reutilizável para operações administrativas.
+AdminDependency = Annotated[
+    str,
+    Depends(validar_admin_key),
 ]
