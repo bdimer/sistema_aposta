@@ -43,6 +43,12 @@ class Settings(BaseModel):
     # Determina por quantos minutos o usuário permanecerá autenticado
     access_token_expire_minutes: int = 60
 
+    # Lê a chave exigida nas operações administrativas.
+    admin_key: str = os.getenv(
+        "ADMIN_KEY",
+        "CHAVE_ADMIN_INSEGURA_PARA_DESENVOLVIMENTO",
+    )
+
 
 
 # Cria uma única instância validada para ser importada pelos demais módulos.
