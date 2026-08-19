@@ -29,6 +29,12 @@ class Settings(BaseModel):
     database_url: str = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
     # Lê a chave da API sem obrigá-la na inicialização do banco local.
     football_api_key: str | None = os.getenv("API_KEY")
+    # Define o endereço principal da Football Data.
+    football_base_url: str = "https://api.football-data.org/v4"
+    # Define o endpoint usado para consultar jogos da Copa do Mundo.
+    football_matches_endpoint: str = "/competitions/WC/matches"
+    # Limita por quantos segundos aguardaremos uma resposta externa.
+    football_api_timeout: int = 10
     # Lê a chave usada para assinar e verificar os tokens de autenticação
     jwt_secret: str = os.getenv(
         "JWT_SECRET",
