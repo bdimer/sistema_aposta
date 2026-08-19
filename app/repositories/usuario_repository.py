@@ -113,3 +113,20 @@ def atualizar_usuario(
 # com SQLAlchemy o banco procura na coluna login sem carregar todos usuarios para uma lista python
 
 
+#------
+# Lista todos os usuários na ordem do ranking.
+def listar_usuarios_ranking(
+    database: Session,
+) -> list[Usuario]:
+    """Ordena usuários pelo saldo sem excluir contas inativas."""
+
+    # Seleciona todos os usuários e organiza o maior saldo primeiro.
+    consulta = select(Usuario).order_by(
+        Usuario.saldo.desc(),
+        # Usa o ID como desempate estável para saldos iguais.
+        Usuario.id.asc(),
+    )
+    # Executa a consulta ordenada.
+    resultado = database.scalars(consulta).all()
+    # Converte o resultado para uma lista Python.
+    return list(resultado)
