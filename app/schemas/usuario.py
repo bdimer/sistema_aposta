@@ -76,4 +76,18 @@ class TokenResponse(BaseModel):
 
     token_type: str = "bearer" # bearer = portador, cria uma chave de acesso
     
+#----
+# Define uma posição pública no ranking.
+class RankingUsuarioResponse(BaseModel):
+    """Representa um usuário dentro da classificação geral."""
 
+    # Indica a colocação calculada pela ordem dos saldos.
+    posicao: int
+    # Identifica o usuário sem expor dados privados.
+    usuario_id: int
+    # Mostra o nome público do participante.
+    nome: str
+    # Exibe a pontuação atual utilizada na classificação.
+    saldo: Decimal
+    # Mantém visível se a conta ainda participa ativamente.
+    ativo: bool
