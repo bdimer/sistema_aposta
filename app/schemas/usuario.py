@@ -1,11 +1,7 @@
 """Define os formatos de entrada e saída relacionados aos usuários."""
 
 from datetime import date, datetime
-
-# Importa Decimal para representar saldo sem imprecisões
 from decimal import Decimal
-
-# Importa recursos do pydantic para validar os dados da API.
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 # Reúne os campos compartilhados no cadastro e em outras operações.
@@ -31,9 +27,7 @@ class UsuarioCreate(UsuarioBase):
 #Define os dados que poderão ser alterados na troca de senha
 class TrocaSenha(BaseModel):
     """Representa a senha atual e a nova senha escolhida."""
-    #compara a senha atual com o hash armazenado
     senha_atual: str = Field(min_length=1, max_length=128)
-    #nova senha será validada antes de gerar um novo hash
     nova_senha: str = Field(min_length=8, max_length=128)
 
 #Define os dados recebidos pelo endpoint de autenticação
