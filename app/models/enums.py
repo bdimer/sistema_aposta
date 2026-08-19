@@ -1,6 +1,5 @@
 """Define valores fechados para estados importantes do domínio."""
 
-# Importa Enum para impedir textos de status inconsistentes no banco.
 from enum import Enum
 
 
