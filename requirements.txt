@@ -24,3 +24,6 @@ pwdlib[argon2]>=0.2,<1
 
 # PyJWT cria e valida tokens usados para manter o usuário autenticado.
 PyJWT>=2.10,<3
+
+# Permite que o FastAPI receba formulários usados pelo login OAuth2.
+python-multipart>=0.0.20,<1
