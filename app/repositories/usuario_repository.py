@@ -99,3 +99,17 @@ def listar_usuarios_ranking(
     )
     resultado = database.scalars(consulta).all()
     return list(resultado)
+
+
+
+# Lista todos os usuários para operações administrativas.
+def listar_todos_usuarios(
+    database: Session,
+) -> list[Usuario]:
+    """Retorna usuários ativos e inativos em ordem de cadastro."""
+
+    consulta = select(Usuario).order_by(
+        Usuario.id.asc()
+    )
+    resultado = database.scalars(consulta).all()
+    return list(resultado)
