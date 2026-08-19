@@ -13,18 +13,21 @@ from app.models.enums import (
 class ApostaCreate(BaseModel):
     """Representa uma nova aposta enviada pelo usuário."""
 
-    # Identifica a partida escolhida dentro do nosso banco.
     partida_id: int = Field(gt=0)
-    # Impede placares negativos para o time da casa.
     gols_casa: int = Field(ge=0)
-    # Impede placares negativos para o time visitante.
     gols_visitante: int = Field(ge=0)
-    # Exige um valor positivo com no máximo duas casas decimais.
     valor_apostado: Decimal = Field(
         gt=0,
         max_digits=10,
         decimal_places=2,
     )
+
+
+# Define os dados usados pelo administrador para apostar por um usuário.
+class AdminApostaCreate(ApostaCreate):
+    """Acrescenta o usuário escolhido aos dados normais da aposta."""
+
+    usuario_id: int = Field(gt=0)
 
 
 # Define os fatores aceitos em uma multiplicação.
