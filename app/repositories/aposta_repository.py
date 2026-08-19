@@ -91,7 +91,6 @@ def listar_apostas_pendentes_da_partida(
         Aposta.partida_id == partida_id,
         Aposta.status == StatusAposta.PENDENTE,
     )
-    # Executa a consulta e obtém todas as apostas correspondentes.
     resultado = database.scalars(consulta).all()
 
     return list(resultado)
@@ -104,7 +103,6 @@ def usuario_possui_aposta_pendente(
 ) -> bool:
     """Retorna True quando existe ao menos uma aposta não liquidada."""
 
-    # Seleciona somente o ID porque não precisamos carregar a aposta inteira.
     consulta = (
         select(Aposta.id)
         .where(
@@ -113,9 +111,7 @@ def usuario_possui_aposta_pendente(
         )
         .limit(1)
     )
-    # Executa a consulta e recebe um ID ou None.
     aposta_id = database.scalar(consulta)
-    # Converte a existência do ID em verdadeiro ou falso.
     return aposta_id is not None
 
 
@@ -129,7 +125,6 @@ def adicionar_aposta(
     database.add(aposta)
     database.flush()
     database.refresh(aposta)
-    # Devolve a aposta persistida na transação.
     return aposta
 
 
@@ -143,5 +138,27 @@ def atualizar_aposta(
     database.add(aposta)
     database.flush()
     database.refresh(aposta)
-    # Devolve a aposta atualizada.
     return aposta
+
+
+
+# Lista somente as apostas pendentes de um usuário.
+def listar_apostas_ativas_do_usuario(
+    database: Session,
+    usuario_id: int,
+) -> list[Aposta]:
+    """Retorna apostas que ainda aguardam resultado."""
+
+    consulta = (
+        select(Aposta)
+        .where(
+            Aposta.usuario_id == usuario_id,
+            Aposta.status == StatusAposta.PENDENTE,
+        )
+        .order_by(
+            Aposta.criado_em.desc()
+        )
+    )
+
+    resultado = database.scalars(consulta).all()
+    return list(resultado)
