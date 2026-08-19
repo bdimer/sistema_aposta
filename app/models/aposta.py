@@ -70,3 +70,11 @@ class Aposta(Base):
     usuario: Mapped["Usuario"] = relationship(back_populates="apostas")
     # Permite navegar da aposta até o objeto completo da partida.
     partida: Mapped["Partida"] = relationship(back_populates="apostas")
+
+    # Declara uma propriedade calculada que não cria outra coluna no banco.
+    @property
+    def valor_total(self) -> Decimal:
+        """Calcula o total comprometido depois das multiplicações."""
+
+        # Multiplica o valor original pelo fator acumulado da aposta.
+        return self.valor_base * self.multiplicador
