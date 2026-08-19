@@ -17,6 +17,7 @@ from app.repositories.aposta_repository import (
     buscar_aposta_do_usuario,
     contar_apostas_por_selecao,
     listar_apostas_do_usuario,
+    listar_apostas_ativas_do_usuario,
 )
 from app.repositories.partida_repository import (
     atualizar_partida,
@@ -44,11 +45,9 @@ def identificar_selecao(
 ) -> SelecaoAposta:
     """Converte o placar previsto em casa, visitante ou empate."""
 
-    # Verifica se o palpite prevê vitória do time da casa.
     if gols_casa > gols_visitante:
         return SelecaoAposta.CASA
 
-    # Verifica se o palpite prevê vitória do visitante.
     if gols_visitante > gols_casa:
         return SelecaoAposta.VISITANTE
     
@@ -62,13 +61,10 @@ def obter_odd_atual(
 ) -> Decimal:
     """Retorna a ODD exibida antes do cadastro da aposta."""
 
-    # Usa a ODD da casa quando o placar favorece o mandante.
     if selecao == SelecaoAposta.CASA:
         return partida.odd_casa
-    # Usa a ODD visitante quando o placar favorece o visitante.
     if selecao == SelecaoAposta.VISITANTE:
         return partida.odd_visitante
-    # Empates são devolvidos e, portanto, não possuem prêmio por ODD.
     return Decimal("1.0000")
 
 # Recalcula as ODDs que valerão para as próximas apostas.
@@ -78,43 +74,35 @@ def recalcular_odds(
 ) -> None:
     """Atualiza as ODDs usando as apostas pendentes de cada lado."""
 
-    # Conta as apostas que apontam vitória da casa.
     quantidade_casa = contar_apostas_por_selecao(
         database,
         partida.id,
         SelecaoAposta.CASA,
     )
-    # Conta as apostas que apontam vitória do visitante.
     quantidade_visitante = contar_apostas_por_selecao(
         database,
         partida.id,
         SelecaoAposta.VISITANTE,
     )
-    # Aplica a ODD padrão se algum dos lados ainda estiver zerado.
     if quantidade_casa == 0 or quantidade_visitante == 0:
         partida.odd_casa = Decimal("2.0000")
         partida.odd_visitante = Decimal("2.0000")
 
-    # Executa as fórmulas quando os dois lados possuem apostas.
     else:
         casa_decimal = Decimal(quantidade_casa)
         visitante_decimal = Decimal(
             quantidade_visitante
         )
-        # Calcula a proporção inversa da ODD da casa.
         odd_casa = Decimal("1") + (
             visitante_decimal / casa_decimal
         )
-        # Calcula a proporção inversa da ODD visitante.
         odd_visitante = Decimal("1") + (
             casa_decimal / visitante_decimal
         )
-        # Arredonda a ODD da casa para quatro casas.
         partida.odd_casa = odd_casa.quantize(
             PRECISAO_ODD,
             rounding=ROUND_HALF_UP,
         )
-        # Arredonda a ODD visitante para quatro casas.
         partida.odd_visitante = odd_visitante.quantize(
             PRECISAO_ODD,
             rounding=ROUND_HALF_UP,
@@ -132,42 +120,34 @@ def criar_aposta(
 ) -> Aposta:
     """Valida, debita, registra e recalcula as ODDs."""
 
-    # Impede operações de uma conta inativa.
     if not usuario.ativo:
         raise ErroRegraAposta(
             "Usuário inativo."
         )
-    # Procura a partida escolhida pelo usuário.
     partida = buscar_partida_por_id(
         database,
         dados.partida_id,
     )
-    # Interrompe a operação se a partida não existir.
     if partida is None:
         raise ErroRegraAposta(
             "Partida não encontrada."
         )
-    # Permite apostas somente enquanto a partida estiver agendada.
     if partida.status != StatusPartida.AGENDADA:
         raise ErroRegraAposta(
             "Esta partida não está disponível para apostas."
         )
-    # Confirma que o usuário possui pontos suficientes.
     if dados.valor_apostado > usuario.saldo:
         raise ErroRegraAposta(
             "Saldo insuficiente para realizar a aposta."
         )
-    # Descobre o lado representado pelo placar previsto.
     selecao = identificar_selecao(
         dados.gols_casa,
         dados.gols_visitante,
     )
-    # Captura a ODD atual antes que esta aposta altere as proporções.
     odd_registrada = obter_odd_atual(
         partida,
         selecao,
     )
-    # Cria o objeto ORM que representa a nova aposta.
     nova_aposta = Aposta(
         usuario_id=usuario.id,
         partida_id=partida.id,
@@ -210,29 +190,24 @@ def multiplicar_aposta(
 ) -> Aposta:
     """Aplica um fator de x2 a x5 sobre uma aposta pendente."""
 
-    # Procura a aposta e confirma que pertence ao usuário.
     aposta = buscar_aposta_do_usuario(
         database,
         aposta_id,
         usuario.id,
     )
-    # Impede acesso a uma aposta inexistente ou pertencente a outra conta.
     if aposta is None:
         raise ErroRegraAposta(
             "Aposta não encontrada."
         )
 
-    # Impede alterações depois da liquidação.
     if aposta.status != StatusAposta.PENDENTE:
         raise ErroRegraAposta(
             "Somente apostas pendentes podem ser multiplicadas."
         )
-    # Procura a partida associada à aposta.
     partida = buscar_partida_por_id(
         database,
         aposta.partida_id,
     )
-    # Protege contra uma referência inválida no banco.
     if partida is None:
         raise ErroRegraAposta(
             "Partida da aposta não encontrada."
@@ -244,28 +219,23 @@ def multiplicar_aposta(
         )
     # Guarda o valor total antes da multiplicação.
     valor_total_atual = aposta.valor_total
-    # Calcula o novo fator acumulado.
     novo_multiplicador = (
         aposta.multiplicador
         * dados.multiplicador
     )
-    # Calcula o novo valor total comprometido.
     novo_valor_total = (
         aposta.valor_base
         * novo_multiplicador
     )
-    # Calcula apenas os pontos adicionais que serão debitados.
     valor_adicional = (
         novo_valor_total
         - valor_total_atual
     )
-    # Confirma que o usuário possui o valor adicional.
     if valor_adicional > usuario.saldo:
         raise ErroRegraAposta(
             "Saldo insuficiente para multiplicar a aposta."
         )
 
-    # Inicia o tratamento da atualização financeira.
     try:
         usuario.saldo -= valor_adicional
         aposta.multiplicador = novo_multiplicador
@@ -294,6 +264,20 @@ def consultar_apostas_usuario(
     """Lista somente as apostas do usuário recebido."""
 
     return listar_apostas_do_usuario(
+        database,
+        usuario.id,
+    )
+
+
+
+# Consulta somente apostas que ainda podem receber resultado.
+def consultar_apostas_ativas_usuario(
+    database: Session,
+    usuario: Usuario,
+) -> list[Aposta]:
+    """Lista as apostas pendentes do usuário autenticado."""
+
+    return listar_apostas_ativas_do_usuario(
         database,
         usuario.id,
     )
