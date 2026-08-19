@@ -1,21 +1,15 @@
 """Modelo ORM que representa a tabela de usuários."""
 
-# Importa TYPE_CHECKING para declarar relações sem causar importação circular.
+
 from typing import TYPE_CHECKING
-# Importa date e datetime para datas de nascimento e auditoria.
 from datetime import date, datetime
-# Importa Decimal para representar pontos sem imprecisão de float.
 from decimal import Decimal
-# Importa tipos e funções SQL usados nas colunas da tabela.
 from sqlalchemy import Boolean, Date, DateTime, Numeric, String, func
-# Importa tipos modernos do ORM para declarar colunas e relacionamentos.
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-# Importa a classe-base compartilhada por todos os modelos.
 from app.database import Base
 
 # Este bloco não executa em produção; serve somente para editores e analisadores.
 if TYPE_CHECKING:
-    # Informa ao editor qual classe está contida na lista de apostas.
     from app.models.aposta import Aposta
 
 
