@@ -51,20 +51,24 @@ class UsuarioResponse(UsuarioBase):
     #Permite criar este schema diretamente a partir de um objeto SQLAlchemy
     model_config = ConfigDict(from_attributes=True)
 
-    # Identificador criado automaticamente pelo banco.
     id: int
-
-    #saldo atual de pontos do usuario
     saldo: Decimal
-
     #Informa se a conta ainda pode acessar o sistema
     ativo: bool
-
     #Informa quando a conta foi cadastrada
     criado_em: datetime
 
+
+# Define a resposta específica da consulta de saldo.
+class SaldoResponse(BaseModel):
+    """Representa os pontos disponíveis do usuário autenticado."""
+
+    # Decimal preserva exatamente o valor armazenado no banco.
+    saldo: Decimal
+
+
 # Define a estrutura devolvida após uma autenticação bem-secedida.
-class TokenResponde(BaseModel):
+class TokenResponse(BaseModel):
     """Representa o token usado nas futuras rotas protegidas."""
 
     # Contém o token JWT assinado pelo servidor
