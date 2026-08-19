@@ -27,11 +27,15 @@ def buscar_usuario_por_id(
 
 # Procura conta pelo login
 def buscar_usuario_por_login(
-        database: Session,
-        login: str,
+    database: Session,
+    login: str,
 ) -> Usuario | None:
     """Retorna o usuario do login informado ou None."""
 
+    # Constrói uma consulta que filtra a coluna login.
+    consulta = select(Usuario).where(
+        Usuario.login == login
+    )
     #Executa a consulta dentro da sessão recebida
     return database.scalar(consulta)
 
