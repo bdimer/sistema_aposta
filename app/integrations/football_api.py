@@ -1,16 +1,12 @@
+
 """Realiza a comunicação com a API externa Football Data."""
 
-# Importa logging para registrar partidas externas que não possam ser convertidas.
+
 import logging
-# Importa requests para realizar a requisição HTTP.
 import requests
-# Importa ValidationError para capturar dados externos inválidos.
 from pydantic import ValidationError
-# Importa as configurações da aplicação.
 from app.config import settings
-# Importa os estados internos aceitos pelo sistema.
 from app.models.enums import StatusPartida
-# Importa o schema usado para validar partidas externas.
 from app.schemas.partida import PartidaImport
 
 
@@ -115,7 +111,6 @@ def buscar_partidas_api() -> list[PartidaImport]:
         )
         # Gera uma exceção para respostas 400, 401, 403, 404 ou 500.
         response.raise_for_status()
-        # Converte o conteúdo JSON recebido para dicionário Python.
         resposta_json = response.json()
 
     # Captura especificamente uma demora superior ao timeout.
@@ -160,15 +155,11 @@ def buscar_partidas_api() -> list[PartidaImport]:
         raise ErroFootballAPI(
             "A resposta externa não contém uma lista de partidas."
         )
-
-    # Prepara a lista que receberá somente partidas válidas.
     partidas_validas: list[PartidaImport] = []
 
     # Percorre individualmente cada partida recebida.
     for dados_partida in partidas_externas:
-        # Protege a conversão porque um item externo pode estar incompleto.
         try:
-            # Converte e adiciona a partida validada à lista final.
             partidas_validas.append(
                 converter_partida(dados_partida)
             )
