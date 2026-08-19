@@ -9,6 +9,7 @@ from fastapi import FastAPI
 # Importa as configurações e a função que cria tabelas ausentes.
 from app.config import settings
 from app.database import create_database_tables
+from app.routes.usuario_routes import router as usuario_router
 
 
 # Converte a função em um gerenciador do ciclo de vida da aplicação.
@@ -19,7 +20,6 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
 
     # Evita alerta de variável ainda não usada durante esta primeira fase.
     del application
-    # Cria as tabelas na primeira execução e preserva as tabelas existentes.
     create_database_tables()
     # Entrega o controle ao FastAPI enquanto o servidor estiver executando.
     yield
@@ -28,6 +28,8 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
 # Instancia a API com nome, versão e rotina de inicialização.
 app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan)
 
+# Adiciona todas as rotas de usuários à aplicação principal.
+app.include_router(usuario_router)
 
 # Registra uma rota GET simples usada para confirmar que o backend está vivo.
 @app.get("/health", tags=["Sistema"])
