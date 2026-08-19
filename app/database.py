@@ -1,11 +1,8 @@
 """Configura a conexão, as sessões e a classe-base do SQLAlchemy."""
 
-# Importa Generator para descrever o tipo da função que entrega sessões à API.
 from collections.abc import Generator
-# Importa os componentes que criam conexões e sessões ORM.
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-# Importa a URL do banco já validada pelo Pydantic.
 from app.config import settings
 
 # SQLite precisa desta opção quando a mesma conexão atende diferentes requisições.
