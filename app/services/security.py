@@ -1,19 +1,11 @@
 
+
 """Fornece funções para proteger senhas e controlar tokens JWT."""
 
-# Importa datetime para registrar o momento de expiração do token
 from datetime import datetime, timedelta, timezone
-
-# Importa jwt para criar e interpretar tokens de autenticação
 import jwt
-
-# Importa a exceção lançada quando um token é inválido ou expirou
 from jwt.exceptions import InvalidTokenError
-
-# Importa PasswordHash para aplicar o algoritmo seguro Argon2
 from pwdlib import PasswordHash
-
-# Importa as configurações validadas da aplicação
 from app.config import settings
 
 
