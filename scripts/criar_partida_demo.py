@@ -1,15 +1,10 @@
+
 """Cria partidas futuras para testar os principais cenários do sistema."""
 
-# Importa recursos para gerar datas futuras.
+
 from datetime import datetime, timedelta, timezone
-
-# Importa select para evitar partidas duplicadas.
 from sqlalchemy import select
-
-# Importa a fábrica de sessões.
 from app.database import SessionLocal
-
-# Importa o modelo e o status das partidas.
 from app.models import Partida, StatusPartida
 
 
@@ -43,20 +38,14 @@ CENARIOS = [
 def criar_partidas_demo() -> None:
     """Insere partidas de teste sem duplicar registros existentes."""
 
-    # Abre uma sessão com o banco.
     database = SessionLocal()
-
-    # Inicia o tratamento da transação.
     try:
-        # Percorre cada cenário definido acima.
         for cenario in CENARIOS:
-            # Procura uma partida com o mesmo ID externo.
             consulta = select(Partida).where(
                 Partida.external_id
                 == cenario["external_id"]
             )
 
-            # Executa a consulta de existência.
             partida_existente = database.scalar(
                 consulta
             )
@@ -68,10 +57,8 @@ def criar_partidas_demo() -> None:
                     f"ID interno: {partida_existente.id}"
                 )
 
-                # Avança para o próximo cenário.
                 continue
 
-            # Calcula uma data futura diferente para cada partida.
             inicio_futuro = (
                 datetime.now(timezone.utc)
                 + timedelta(days=cenario["dias"])
@@ -87,10 +74,7 @@ def criar_partidas_demo() -> None:
                 status=StatusPartida.AGENDADA,
             )
 
-            # Coloca a partida na fila de inserção.
             database.add(partida)
-
-            # Envia o INSERT para obter o ID interno.
             database.flush()
 
             # Mostra o ID que será utilizado no Swagger.
@@ -99,14 +83,10 @@ def criar_partidas_demo() -> None:
                 f"ID interno: {partida.id}"
             )
 
-        # Confirma conjuntamente todos os novos cenários.
         database.commit()
 
-    # Captura qualquer falha durante a criação.
     except Exception:
-        # Desfaz todas as inserções desta execução.
         database.rollback()
-
         # Reenvia o erro para mostrar o traceback.
         raise
 
