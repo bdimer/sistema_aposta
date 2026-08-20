@@ -107,12 +107,39 @@
     <section id="adminView" class="hidden">
       <nav class="menu admin-menu">
         <button onclick="showAdminPanel('adminUsers'); loadAdminUsers()">Usuários</button>
+        <button onclick="showAdminPanel('adminMatches'); loadAdminMatchesView('SCHEDULED')">Partidas</button>
         <button onclick="showAdminPanel('adminBet'); loadAdminMatches()">Criar aposta</button>
         <button onclick="showAdminPanel('adminSearch')">Pesquisar</button>
         <button onclick="showAdminPanel('adminResult'); loadAdminMatches()">Encerrar partida</button>
       </nav>
 
-      <div id="adminUsers" class="admin-panel panel"><div class="section-title"><h2>Todos os usuários</h2><button onclick="loadAdminUsers()">Atualizar</button></div><div id="users"></div></div>
+      <div id="adminUsers" class="admin-panel panel">
+        <div class="section-title">
+          <h2>Todos os usuários</h2>
+          <div class="filter-actions">
+            <select aria-label="Ordenar usuários" onchange="sortAdminUsers(this.value)">
+              <option value="id">Ordenar por ID</option>
+              <option value="saldo">Ordenar por saldo</option>
+              <option value="nome">Ordenar por nome</option>
+            </select>
+            <button onclick="loadAdminUsers()">Atualizar</button>
+          </div>
+        </div>
+        <div id="users"></div>
+        <div id="adminUserDetail" class="card user-detail hidden"></div>
+      </div>
+
+      <div id="adminMatches" class="admin-panel panel hidden">
+        <div class="section-title">
+          <div><span class="eyebrow">CONTROLE DE JOGOS</span><h2 id="adminMatchesTitle">Partidas agendadas</h2></div>
+          <div class="filter-actions">
+            <button onclick="loadAdminMatchesView('SCHEDULED')">Agendadas</button>
+            <button onclick="loadAdminMatchesView('FINISHED')">Encerradas</button>
+            <button onclick="syncMatches()">Sincronizar API</button>
+          </div>
+        </div>
+        <div id="adminMatchesList" class="cards"></div>
+      </div>
 
       <div id="adminBet" class="admin-panel panel hidden">
         <form class="card compact-form" onsubmit="createAdminBet(event)">
