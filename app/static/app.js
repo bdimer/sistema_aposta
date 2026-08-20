@@ -1,6 +1,7 @@
 let token = sessionStorage.getItem("token") || "";
 let adminKey = sessionStorage.getItem("adminKey") || "";
 let currentUser = null;
+let adminUsersCache = [];
 
 async function api(path, options = {}) {
   const headers = { ...(options.headers || {}) };
@@ -102,7 +103,7 @@ async function loadUserHome() {
 }
 
 function betCard(bet) {
-  return `<article class="card bet"><span class="badge">${bet.status}</span><h3>Partida #${bet.partida_id} · ${bet.gols_casa} × ${bet.gols_visitante}</h3><p class="meta">${bet.valor_total} pts · ODD ${bet.odd_registrada} · multiplicador x${bet.multiplicador}</p>${bet.status === "PENDING" ? `<button onclick="multiplyBet(${bet.id})">Multiplicar</button>` : ""}</article>`;
+  return `<article class="card bet"><div class="bet-heading"><strong>Aposta #${bet.id}</strong><span class="badge">${bet.status}</span></div><h3>Partida #${bet.partida_id} · ${bet.gols_casa} × ${bet.gols_visitante}</h3><p class="meta">${bet.valor_total} pts · ODD ${bet.odd_registrada} · multiplicador x${bet.multiplicador}</p>${bet.status === "PENDING" ? `<button onclick="multiplyBet(${bet.id})">Multiplicar</button>` : ""}</article>`;
 }
 
 async function loadMatches(status = "SCHEDULED") {
@@ -163,10 +164,56 @@ function table(headers, rows) {
   return `<div class="table-wrap"><table><thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(row => `<tr>${row.map(value => `<td>${value}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]);
+}
+
 async function loadAdminUsers() {
   try {
-    const users = await api("/admin/usuarios", { admin: true });
-    document.getElementById("users").innerHTML = table(["ID", "Nome", "Login", "Saldo", "Ativo"], users.map(user => [user.id, user.nome, user.login, user.saldo, user.ativo ? "Sim" : "Não"]));
+    adminUsersCache = await api("/admin/usuarios", { admin: true });
+    sortAdminUsers("id");
+  } catch (error) { notify(error.message, true); }
+}
+
+async function loadAdminMatchesView(status = "SCHEDULED") {
+  try {
+    const matches = await api(`/partidas?status=${status}`);
+    const finished = status === "FINISHED";
+    document.getElementById("adminMatchesTitle").textContent = finished ? "Partidas encerradas" : "Partidas agendadas";
+    document.getElementById("adminMatchesList").innerHTML = matches.length ? matches.map(match => {
+      const date = new Date(match.inicio_em).toLocaleString("pt-BR");
+      const details = finished
+        ? `<p class="match-score">${match.gols_casa} × ${match.gols_visitante}</p><p class="meta">Resultado final</p>`
+        : `<p class="meta">ODD casa: ${match.odd_casa} · ODD visitante: ${match.odd_visitante}</p>`;
+      return `<article class="card match"><div class="bet-heading"><strong>Partida #${match.id}</strong><span class="badge">${match.status}</span></div><h3>${escapeHtml(match.time_casa)} × ${escapeHtml(match.time_visitante)}</h3>${details}<p class="meta">${escapeHtml(match.fase)} · ${date}</p></article>`;
+    }).join("") : `<p>Nenhuma partida ${finished ? "encerrada" : "agendada"}.</p>`;
+  } catch (error) { notify(error.message, true); }
+}
+
+async function syncMatches() {
+  if (!confirm("Deseja importar ou atualizar as partidas usando a API externa?")) return;
+  try {
+    const result = await api("/partidas/sincronizar", { method: "POST", admin: true });
+    notify(`Sincronização concluída: ${result.partidas_criadas} criadas e ${result.partidas_atualizadas} atualizadas.`);
+    loadAdminMatchesView("SCHEDULED");
+    loadAdminMatches();
+  } catch (error) { notify(error.message, true); }
+}
+
+function sortAdminUsers(order) {
+  const users = [...adminUsersCache];
+  if (order === "saldo") users.sort((first, second) => Number(second.saldo) - Number(first.saldo) || first.id - second.id);
+  else if (order === "nome") users.sort((first, second) => first.nome.localeCompare(second.nome, "pt-BR"));
+  else users.sort((first, second) => first.id - second.id);
+  document.getElementById("users").innerHTML = table(["ID", "Nome", "Login", "Saldo", "Ativo"], users.map(user => [user.id, `<button class="link-button" onclick="viewAdminUser(${user.id})">${escapeHtml(user.nome)}</button>`, escapeHtml(user.login), user.saldo, user.ativo ? "Sim" : "Não"]));
+}
+
+async function viewAdminUser(id) {
+  try {
+    const user = await api(`/admin/usuarios/${id}`, { admin: true });
+    const detail = document.getElementById("adminUserDetail");
+    detail.innerHTML = `<div class="section-title"><h2>Dados do usuário #${user.id}</h2><button class="ghost" onclick="this.closest('.user-detail').classList.add('hidden')">Fechar</button></div><dl><dt>Nome</dt><dd>${escapeHtml(user.nome)}</dd><dt>Login</dt><dd>${escapeHtml(user.login)}</dd><dt>E-mail</dt><dd>${escapeHtml(user.email)}</dd><dt>CPF</dt><dd>${escapeHtml(user.cpf)}</dd><dt>Nascimento</dt><dd>${escapeHtml(user.data_nascimento)}</dd><dt>Saldo</dt><dd>${user.saldo} pontos</dd><dt>Situação</dt><dd>${user.ativo ? "Ativo" : "Inativo"}</dd><dt>Cadastrado em</dt><dd>${new Date(user.criado_em).toLocaleString("pt-BR")}</dd></dl>`;
+    detail.classList.remove("hidden");
   } catch (error) { notify(error.message, true); }
 }
 
@@ -194,7 +241,12 @@ async function searchAdmin(event, resource) {
 async function closeMatch(event) {
   event.preventDefault(); const raw = Object.fromEntries(new FormData(event.target));
   if (!confirm(`Confirma o placar ${raw.gols_casa} × ${raw.gols_visitante}? A liquidação não pode ser repetida.`)) return;
-  try { const result = await api(`/partidas/${raw.partida_id}/resultado`, { method: "PATCH", admin: true, json: { gols_casa: Number(raw.gols_casa), gols_visitante: Number(raw.gols_visitante) } }); notify(`Partida encerrada: ${result.placar}`); event.target.reset(); loadAdminMatches(); }
+  try {
+    const result = await api(`/partidas/${raw.partida_id}/resultado`, { method: "PATCH", admin: true, json: { gols_casa: Number(raw.gols_casa), gols_visitante: Number(raw.gols_visitante) } });
+    notify(`Partida encerrada: ${result.placar}`);
+    event.target.reset();
+    loadAdminMatches();
+  }
   catch (error) { notify(error.message, true); }
 }
 
