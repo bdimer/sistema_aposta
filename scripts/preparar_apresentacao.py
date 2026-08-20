@@ -55,7 +55,7 @@ PARTIDAS_APRESENTACAO = [
         # Agenda essa partida depois do cenário principal.
         "dias": 4,
         # Identifica rapidamente a finalidade durante a apresentação.
-        "fase": "APRESENTAÇÃO - FALÊNCIA",
+        "fase": "APRESENTAÇÃO - APOSTAS",
         # Permite que a partida receba apostas.
         "status": StatusPartida.AGENDADA,
         # Mantém o placar vazio até o fechamento administrativo.
@@ -73,7 +73,7 @@ PARTIDAS_APRESENTACAO = [
         # Agenda a partida para depois dos outros cenários.
         "dias": 5,
         # Identifica o teste opcional de devolução dos pontos.
-        "fase": "APRESENTAÇÃO - EMPATE",
+        "fase": "APRESENTAÇÃO - APOSTAS",
         # Mantém a partida aberta para novas apostas.
         "status": StatusPartida.AGENDADA,
         # Não define gols antes do encerramento.
