@@ -29,6 +29,8 @@ input,select { width:100%; padding:.72rem; border:1px solid var(--line); border-
 .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
 .match,.bet { position:relative; }
 .match h3,.bet h3 { margin:.3rem 0; }
+.bet-heading { display:flex; align-items:center; justify-content:space-between; gap:.75rem; }
+.bet-heading strong { color:var(--green); font-size:1.05rem; }
 .match-score { margin:.6rem 0 .2rem; color:var(--green); font-size:2rem; font-weight:900; }
 .meta { color:var(--muted); font-size:.88rem; }
 .badge { display:inline-block; padding:.3rem .55rem; border-radius:99px; color:var(--green); background:#e2f1e7; font-size:.75rem; font-weight:800; }
@@ -46,6 +48,12 @@ th { color:var(--muted); font-size:.78rem; text-transform:uppercase; }
 .danger:hover { background:#c23a3e; }
 .danger-zone { border-color:#e7c4c4; }
 .result { padding:1rem; border-radius:12px; color:#ddf7e7; background:#102a1d; white-space:pre-wrap; }
+.link-button { padding:0; color:var(--green); background:transparent; text-align:left; }
+.link-button:hover { color:var(--green2); background:transparent; text-decoration:underline; }
+.user-detail { margin-top:1rem; }
+.user-detail dl { display:grid; grid-template-columns:max-content 1fr; gap:.55rem 1rem; margin-bottom:0; }
+.user-detail dt { color:var(--muted); font-weight:700; }
+.user-detail dd { margin:0; word-break:break-word; }
 .toast { position:fixed; right:1.2rem; bottom:1.2rem; max-width:420px; padding:1rem 1.2rem; border-radius:12px; color:white; background:#153d2a; box-shadow:var(--shadow); z-index:10; }
 .toast.error { background:var(--danger); }
 .hidden { display:none !important; }
